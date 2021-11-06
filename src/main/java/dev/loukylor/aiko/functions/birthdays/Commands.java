@@ -89,7 +89,7 @@ public class Commands {
         event.deferReply(true).setContent("Message added successfully!").queue();
     }
 
-    @RequirePermissions(permissions = Permission.ADMINISTRATOR)
+    @RequiredPermissions(permissions = Permission.ADMINISTRATOR)
     @Subcommand(name = "birthdaychannel", description = "Sets the channel to send birthday messages to")
     public static void handleBirthdayChannel(SlashCommandEvent event,
                                        @CommandParameter(name = "channel", description = "The channel to send birthday messages to") GuildChannel birthdayChannel)
@@ -120,7 +120,7 @@ public class Commands {
     }
 
     @RequireOutOfDMs
-    @RequirePermissions(permissions = Permission.ADMINISTRATOR)
+    @RequiredPermissions(permissions = Permission.ADMINISTRATOR)
     @Subcommand(name = "pingeveryone", description = "Whether or not the bot should ping everyone on someone's birthday")
     public static void handlePingEveryone(SlashCommandEvent event,
                                           @CommandParameter(name = "shouldping", description = "true if yes, or false if no") boolean shouldPing) {

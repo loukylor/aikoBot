@@ -184,6 +184,13 @@ public class EventHandler extends ListenerAdapter {
                     return;
                 }
             }
+
+            for (Permission permission : currentCommand.requiredBotPermissions) {
+                if (!PermissionUtil.checkPermission(event.getGuildChannel(), event.getMember(), permission)) {
+                    event.reply(String.format("I lack the permission `%s` to run that command!", permission.getName())).queue();
+                    return;
+                }
+            }
         }
 
         // Create params array with the event as the first arg
@@ -231,7 +238,7 @@ public class EventHandler extends ListenerAdapter {
     public void onReady(@NotNull ReadyEvent event) {
         Reflections reflections = new Reflections(
                 new ConfigurationBuilder()
-                        .forPackage("dev.loukylor.aiko.functions", ClassLoader.getSystemClassLoader())
+                        .forPackage("dev.loukylor.aiko.functions")
                         .addScanners(Scanners.MethodsAnnotated, Scanners.TypesAnnotated, Scanners.SubTypes)
         );
 
@@ -271,14 +278,18 @@ public class EventHandler extends ListenerAdapter {
 class CachedCommand {
     final Method method;
     final Permission[] requiredPermissions;
+    final Permission[] requiredBotPermissions;
     final boolean requireOutOfDMs;
 
     public CachedCommand(Method method)
     {
         this.method = method;
 
-        RequirePermissions requirePermissionsAnnotation = method.getAnnotation(RequirePermissions.class);
-        requiredPermissions = requirePermissionsAnnotation == null ? new Permission[0] : requirePermissionsAnnotation.permissions();
+        RequiredPermissions requiredPermissionsAnnotation = method.getAnnotation(RequiredPermissions.class);
+        requiredPermissions = requiredPermissionsAnnotation == null ? new Permission[0] : requiredPermissionsAnnotation.permissions();
+
+        RequiredBotPermissions requiredBotPermissionsAnnotation = method.getAnnotation(RequiredBotPermissions.class);
+        requiredBotPermissions = requiredBotPermissionsAnnotation == null ? new Permission[0] : requiredBotPermissionsAnnotation.permissions();
 
         requireOutOfDMs = method.getAnnotation(RequireOutOfDMs.class) != null;
     }
